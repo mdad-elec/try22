@@ -13,40 +13,55 @@ Amplify.configure(outputs);
 const client = generateClient<Schema>();
 
 export default function App() {
-  const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
+  const [students, setStudents] = useState<Array<Schema["Student"]["type"]>>([]);
+  const [teachers, setTeachers] = useState<Array<Schema["Teacher"]["type"]>>([]);
 
-  function listTodos() {
-    client.models.Todo.observeQuery().subscribe({
-      next: (data) => setTodos([...data.items]),
+  function listData() {
+    client.models.Student.observeQuery().subscribe({
+      next: (data) => setStudents([...data.items]),
+    });
+
+    client.models.Teacher.observeQuery().subscribe({
+      next: (data) => setTeachers([...data.items]),
     });
   }
 
   useEffect(() => {
-    listTodos();
+    listData();
   }, []);
 
-  function createTodo() {
-    client.models.Todo.create({
-      content: window.prompt("Todo content"),
+  function createStudent() {
+    client.models.Student.create({
+      name: window.prompt("Student name"),
+      email: window.prompt("Student email"),
+      class: window.prompt("Student class"),
+    });
+  }
+
+  function createTeacher() {
+    client.models.Teacher.create({
+      name: window.prompt("Teacher name"),
+      email: window.prompt("Teacher email"),
     });
   }
 
   return (
     <main>
-      <h1>My todos</h1>
-      <button onClick={createTodo}>+ new</button>
+      <h1>Students</h1>
+      <button onClick={createStudent}>+ Add Student</button>
       <ul>
-        {todos.map((todo) => (
-          <li key={todo.id}>{todo.content}</li>
+        {students.map((student) => (
+          <li key={student.id}>{student.name} - {student.email} - Class: {student.class}</li>
         ))}
       </ul>
-      <div>
-        🥳 App successfully hosted. Try creating a new todo.
-        <br />
-        <a href="https://docs.amplify.aws/nextjs/start/quickstart/nextjs-app-router-client-components/">
-          Review next steps of this tutorial.
-        </a>
-      </div>
+
+      <h1>Teachers</h1>
+      <button onClick={createTeacher}>+ Add Teacher</button>
+      <ul>
+        {teachers.map((teacher) => (
+          <li key={teacher.id}>{teacher.name} - {teacher.email}</li>
+        ))}
+      </ul>
     </main>
   );
 }
