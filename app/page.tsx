@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { generateClient } from "aws-amplify/data";
 import { useAuthenticator } from "@aws-amplify/ui-react";
 import type { Schema } from "@/amplify/data/resource";
@@ -17,14 +17,12 @@ export default function App() {
   const [students, setStudents] = useState<Array<Schema["Student"]["type"]>>([]);
   const { signOut } = useAuthenticator();
 
-  function listStudents() {
-    client.models.Student.observeQuery().subscribe({
+  useEffect(() => {
+    const subscription = client.models.Student.observeQuery().subscribe({
       next: (data) => setStudents([...data.items]),
     });
-  }
 
-  useEffect(() => {
-    listStudents();
+    return () => subscription.unsubscribe(); // Cleanup subscription
   }, []);
 
   function createStudent() {
@@ -51,13 +49,6 @@ export default function App() {
           </li>
         ))}
       </ul>
-      <div>
-        🥳 App successfully hosted. Try creating a new student.
-        <br />
-        <a href="https://docs.amplify.aws/nextjs/start/quickstart/nextjs-app-router-client-components/">
-          Review next steps of this tutorial.
-        </a>
-      </div>
       <button onClick={signOut}>Sign out</button>
     </main>
   );
