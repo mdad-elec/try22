@@ -1,12 +1,15 @@
 version: 1
 backend:
   phases:
+    preBuild:
+      commands:
+        - npm install -g @aws-amplify/ampx  # Ensure ampx is installed
     build:
       commands:
         - npm ci --cache .npm --prefer-offline
-        - npx ampx pipeline-deploy --branch main --app-id d2hjiz2jgb450b
+        - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
 frontend:
-  phases: 
+  phases:
     build:
       commands:
         - npm run build
@@ -18,4 +21,3 @@ frontend:
     paths:
       - .next/cache/**/*
       - .npm/**/*
-      - node_modules/**/*
